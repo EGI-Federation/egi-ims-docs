@@ -1,0 +1,121 @@
+---
+egi:
+  ims:
+    # To access the tool(s) you need to be member of the VO.
+    vo: vo.tools.egi.eu
+    group: DOC # Unused (except from logging), no such group in the VO
+  checkin:
+    server: https://aai-demo.egi.eu
+    username: co_2.toolsegi
+    password: password
+    co-id: 2
+    cache-vo-members: 600000 # milliseconds
+    cache-roles: 60000 # milliseconds
+    trace-roles: false
+  google:
+    id: 115826270613244604986
+    email: egi-ims-document-api@ims-tools-408617.iam.gserviceaccount.com
+    credentials: "C:/Work/EGI IMS Tool/google.json"
+    tokens: tokens # Folder to store authorization tokens, delete content when changing requested scope(s)
+  qos:
+    quantiles: [0.95]
+    slos: [500] # SLOs in milliseconds
+
+quarkus:
+  application:
+    name: doc-api
+  oidc:
+    auth-server-url: https://aai-demo.egi.eu/auth/realms/egi
+    application-type: service
+    #discovery-enabled: false
+    #introspection-path: /protocol/openid-connect/token/introspect
+    roles:
+      source: userinfo
+    token-cache:
+      max-size: 1000              # Set to > 0 to enable cache
+      time-to-live: 5M            # How long a cache entry can be valid
+      clean-up-timer-interval: 1M # Enable cleanup timer
+  log:
+    level: INFO
+    min-level: DEBUG
+    console:
+      enable: true
+      format: "%d{HH:mm:ss} %-5p traceId=%X{traceId}, spanId=%X{spanId}, sampled=%X{sampled} [%c{2.}] (%t) %s%e%n"
+      json:
+        ~: false
+    file:
+      enable: true
+      path: logs/doc-api.json
+      format: "%d{HH:mm:ss} %-5p traceId=%X{traceId}, parentId=%X{parentId}, spanId=%X{spanId}, sampled=%X{sampled} [%c{2.}] (%t) %s%e%n"
+      rotation:
+        max-file-size: 1M
+        max-backup-index: 10
+      json:
+        ~: true
+    category:
+      "io.quarkus.oidc.runtime.OidcRecorder": # Initialization
+        level: TRACE
+        min-level: TRACE
+      "io.quarkus.oidc.runtime.OidcProvider": # Verification
+        level: TRACE
+        min-level: TRACE
+  otel:
+    enabled: false
+    exporter:
+      otlp:
+        traces:
+          legacy-endpoint: http://localhost:4317
+  micrometer:
+    enabled: true
+    export:
+      prometheus:
+        path: /metrics
+    binder:
+      http-client:
+        ignore-patterns: /.+
+      http-server:
+        ignore-patterns: /metrics
+  swagger-ui:
+    always-include: true
+    path: /swagger-ui
+    theme: flattop
+    urls:
+      default: /api/doc/openapi
+      local: /openapi
+    urls-primary-name: default
+  smallrye-openapi:
+    path: /openapi
+    info-version: 1.0.1
+    security-scheme-name: OIDC
+    security-scheme-description: OpenID Connect access token issued by EGI Check-In
+    security-scheme: jwt
+    jwt-security-scheme-value: bearer
+    jwt-bearer-format: JWT
+  jackson:
+    fail-on-unknown-properties: false
+  http:
+    port: 8083
+    auth:
+      basic: false
+    cors:
+      ~: true
+      origins: http://localhost:8080
+      headers: Authorization,Accept,Content-Type
+      methods: HEAD,GET,POST,PUT,PATCH,DELETE,OPTIONS
+    proxy:
+      proxy-address-forwarding: true
+      allow-x-forwarded: true
+      enable-forwarded-host: true
+    access-log:
+      enabled: false
+      pattern: "%r -> %s\n%{ALL_REQUEST_HEADERS}\n"
+      log-to-file: true
+      base-file-name: doc-api-
+      log-directory: logs
+  tls:
+    trust-all: false
+  test:
+    continuous-testing: disabled
+  keycloak:
+    devservices:
+      enabled: false

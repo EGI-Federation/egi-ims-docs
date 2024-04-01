@@ -6,11 +6,12 @@
 ![GitHub issue custom search in repo](https://img.shields.io/github/issues-search/EGI-Federation/egi-ims-docs?label=Bugs&color=red&query=is%3Aopen%20label%3Abug)
 
 The Documents Service API is a component of the
-[EGI IMS Tools](https://github.com/EGI-Federation/egi-ims-tool)
-service, which provides tools to automate and simplify the IMS processes. This component can create/archive Google documents, and can send them by e-mail.
+[EGI IMS Tools](https://github.com/EGI-Federation/egi-ims-tool) service, which provides tools
+to automate and simplify the IMS processes. This component can create Google documents based on
+templates and placeholder dictionaries, and can send them by e-mail.
 
 This project uses [Quarkus](https://quarkus.io), the Supersonic Subatomic Java Framework.
-It requires [Java 17](https://openjdk.org/projects/jdk/17/).
+It requires [Java 17](https://openjdk.org/projects/jdk/17/) and Quarkus [tooling](https://quarkus.io/guides/cli-tooling).
 
 ## Authentication and authorization
 

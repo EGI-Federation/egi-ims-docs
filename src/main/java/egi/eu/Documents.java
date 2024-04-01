@@ -246,17 +246,18 @@ public class Documents extends BaseResource {
 
                 return Uni.createFrom().item(gdoc);
             })
-            .chain(gdoc -> {
+            .chain(file -> {
                 var drive = driveClient.get(0);
 
                 // Move file to specified destination
                 // This will inherit sharing from the destination folder
+                File gdoc = null;
                 File update = new File();
                 update.setName(doc.name);
                 update.setParents(Collections.singletonList(doc.parentFolder));
 
                 try {
-                    gdoc = drive.files().copy(gdoc.getId(), update)
+                    gdoc = drive.files().copy(file.getId(), update)
                             .setSupportsTeamDrives(true)
                             .setFields("id,name,webViewLink")
                             .execute();
